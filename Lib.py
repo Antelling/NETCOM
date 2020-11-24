@@ -14,8 +14,8 @@ def CreateConnect(host, port, server=False):
         s.connect((ip, port))
     return s
 
-def SendMessage(sock, message):
-    message = bytes(message + '\n', "utf-8")
+def SendMessage(sock, message="empty", msgtype="MSG"):
+    message = bytes(msgtype + "|" + message + '\n', "utf-8")
     try :
         sock.sendall(message) #Send the whole string
     except socket.error:
@@ -36,11 +36,6 @@ def RecvMessage(sock, recv_buffer=4096, delim='\n'):
 
         while buffer.find(delim) != -1:
             line, buffer = buffer.split('\n', 1)
-            yield line
-    return
-
-
-def ClientClose(sock):
-    SendMessage(sock, 'BYE')
-    sock.close()
+            msgtype, msg = line.split("|", 1)
+            yield msgtype, msg 
     return
