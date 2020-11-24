@@ -37,5 +37,4 @@ def RecvMessage(sock, recv_buffer=4096, delim='\n'):
         while buffer.find(delim) != -1:
             line, buffer = buffer.split('\n', 1)
             msgtype, msg = line.split("|", 1)
-            yield msgtype, msg 
-    return
+            return msg, msgtype 

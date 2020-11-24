@@ -16,6 +16,25 @@ to send messages to other threads. An array containing all nicknames
 will also be passed. 
 """
 def connection_thread(con, client_address, message_receivers, nicknames):
+    #first message from client should be a HELLO msg 
+    msg, msgtype = Lib.RecvMessage(con)
+    assert msgtype == "HELLO"
+    Lib.SendMessage(con, msgtype="HELLO")
+
+    #now we expect nickname requests until a nickname is sent
+    nick = ""
+    while not nick:
+        requested_nick, msgtype = Lib.RecvMessage(con)
+        print("requested nickname: ", requested_nick, msgtype)
+        assert msgtype == "NICK"
+        if (not requested_nick in nicknames) and is_good_nickname(requested_nick):
+            print("nickname set. ")
+            nicknames.add(requested_nick)
+            nick = requested_nick
+            Lib.SendMessage(con, msgtype="NICKSET")
+        else:
+            Lib.SendMessage(con, msgtype="FAIL")
+
     #set up callback 
     send_msg = lambda msg, t="MSG": Lib.SendMessage(con, msg)
     mutex.acquire() # I don't think I need to do this but don't 
@@ -23,29 +42,11 @@ def connection_thread(con, client_address, message_receivers, nicknames):
     message_receivers.append(send_msg)
     mutex.release()
 
-    #first message from client should be a HELLO msg 
-    init_msg, msgtype = Lib.RecvMessage(con)
-    if msgtype != "HELLO":
-        Lib.SendMessage(con, "First message must be HELLO, rude, rejected.", msgtype="ERROR")
-        return 
-    Lib.SendMessage(con, msgtype="HELLO")
-
-    #now we expect nickname requests until a nickname is sent
-    nick = ""
-    while not nick:
-        requested_nick, msgtype = Lib.RecvMessage(con)
-        assert msgtype == "NICK"
-        if (not requested_nick in nicknames) and is_good_nickname(requested_nick):
-            nicknames.add(requested_nick)
-            nick = requested_nick
-            Lib.SendMessage(s, msgtype="NICKSET")
-        else:
-            Lib.SendMessage(s, msgtype="FAIL")
-
     #handle messages recieved by client
-    for msg, msgtype in Lib.RecvMessage(con):
+    while True:
+        msg, msgtype = Lib.RecvMessage(con)
         if msgtype == "MSG":
-            msg = f"<{nick}>: ", msg
+            msg = f"<{nick}>: {msg}"
             mutex.acquire()
             print(msg)
             [mr(msg) for mr in message_receivers]
@@ -70,6 +71,7 @@ try:
 
     while True:
         connection, client_address = sock.accept()
+        print("connection started")
         x = threading.Thread(target=connection_thread, args=(
             connection, client_address, message_receivers, nicknames))
         x.start()
