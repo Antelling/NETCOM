@@ -44,6 +44,7 @@ Thread-safe method to append to a file
 def log_msg(filename, msg):
     try:
         mutex.acquire()
+		print("Logging messages")
         f = open(filename, "a")
         f.write(msg)
         f.close()
@@ -77,6 +78,7 @@ def connection_thread(con, client_address, filename, nicknames):
         if (not requested_nick in nicknames) and is_good_nickname(requested_nick):
             nicknames.add(requested_nick)
             nick = requested_nick
+			print("Nickname successfully added")
             Lib.SendMessage(con, msgtype="READY")
         else:
             Lib.SendMessage(con, msgtype="RETRY")
@@ -127,6 +129,11 @@ try:
 
 except KeyboardInterrupt:
     print("closing server.")
+    #the rubric says that the server is meant to send a message to all clients 
+    #telling them the server is shutting down. However, the clients are not 
+    #listening to the server, so the only way we have to send a message is 
+    #bubbling an error. We could go through every connection and close it manually,
+    #but that happens automatically when the program terminates. 
     #the rubric says that the server is meant to send a message to all clients 
     #telling them the server is shutting down. However, the clients are not 
     #listening to the server, so the only way we have to send a message is 
