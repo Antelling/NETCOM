@@ -44,7 +44,7 @@ Thread-safe method to append to a file
 def log_msg(filename, msg):
     try:
         mutex.acquire()
-		print("Logging messages")
+	print("Logging messages")
         f = open(filename, "a")
         f.write(msg)
         f.close()
