@@ -10,7 +10,7 @@ Filename:        README.md
 Purpose:         Explain the creation, function and proper use of the chat application including how to build and run, file manifest, responsibility matrix, protocol details,
                  assumptions, and discussion on the development process.
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------                 
-Buid:
+Build:
   The project was coded in python, so there is no need to build the files and there is no required makefile.
 Run:  
   Server:
