@@ -93,7 +93,7 @@ def connection_thread(con, client_address, filename, nicknames):
         except TypeError:
             #this happens when RecvMessage returns None and it fails to unpack
             #that happens when the client exits unexpectedly
-            log_msg(filename, f"DISCONNECT: {nick}")
+            log_msg(filename, f"DISCONNECT: {nick}\n")
             nicknames.remove(nick)
             return
 
@@ -102,7 +102,7 @@ def connection_thread(con, client_address, filename, nicknames):
             log_msg(filename, msg)
         elif msgtype == "BYE":
             con.close()
-            log_msg(filename, f"EXIT: {nick}")
+            log_msg(filename, f"EXIT: {nick}\n")
             nicknames.remove(nick)
         else:
             # this should not happen
