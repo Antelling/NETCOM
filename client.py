@@ -4,7 +4,7 @@ def nickname(con):
     message = input("Please input a nickname> ")
     Lib.SendMessage(con, message, msgtype="NICK")
     response, response_type = Lib.RecvMessage(con)
-    if response_type != "NICKSET":
+    if response_type != "READY":
         print("Nickname is not allowed by server.")
         nickname(con)
 
