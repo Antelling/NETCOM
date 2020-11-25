@@ -44,7 +44,6 @@ Thread-safe method to append to a file
 def log_msg(filename, msg):
     try:
         mutex.acquire()
-	print("Logging messages")
         f = open(filename, "a")
         f.write(msg)
         f.close()
@@ -78,7 +77,6 @@ def connection_thread(con, client_address, filename, nicknames):
         if (not requested_nick in nicknames) and is_good_nickname(requested_nick):
             nicknames.add(requested_nick)
             nick = requested_nick
-			print("Nickname successfully added")
             Lib.SendMessage(con, msgtype="READY")
         else:
             Lib.SendMessage(con, msgtype="RETRY")
